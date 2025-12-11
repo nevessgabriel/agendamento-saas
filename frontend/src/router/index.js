@@ -5,6 +5,7 @@ import { useAuthStore } from '../stores/auth';
 //Importing views
 import LoginView from '../views/LoginView.vue';
 import DashboardView from '../views/DashboardView.vue';
+import CalendarView from '../views/CalendarView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -19,6 +20,12 @@ const router = createRouter({
       name: 'dashboard',
       component: DashboardView,
       meta: { requiresAuth: true } //Route that needs authentication
+    },
+    {
+      path: '/calendar',  // <--- A ROTA QUE O ERRO DIZIA NÃO EXISTIR
+      name: 'calendar',
+      component: CalendarView,
+      meta: { requiresAuth: true }
     },
     {
       path: '/',
