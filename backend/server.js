@@ -7,6 +7,7 @@ const cors = require('cors');
 const authRoutes = require('./src/routes/authRoutes');
 const serviceRoutes = require('./src/routes/serviceRoutes');
 const scheduleRoutes = require('./src/routes/scheduleRoutes');
+const statsRoutes = require('./src/routes/statsRoutes');
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/services', serviceRoutes);
 app.use('/api/schedules', scheduleRoutes);
+app.use('/api/stats', statsRoutes);
 
 //Simple route to test server
 app.get('/', (req, res) => {

@@ -55,17 +55,22 @@ const handleDelete = async (id) => {
 <template>
   <div class="dashboard-layout">
     <header class="navbar">
-        <div style="padding: 1rem 2rem; text-align: right;">
-    <router-link to="/calendar" class="btn-primary" style="text-decoration: none;">
-       📅 Ver Agenda
-    </router-link>
-</div>
       <div class="brand">SaaS Scheduler</div>
       <div class="user-info">
         <span>Bem-vindo, {{ authStore.user?.email }}</span>
         <button @click="handleLogout" class="btn-logout">Logout</button>
       </div>
     </header>
+
+    <div class="actions-bar">
+        <router-link to="/calendar" class="dashboard-btn">
+           📅 Ver Agenda
+        </router-link>
+        
+        <router-link to="/reports" class="dashboard-btn">
+           📊 Ver Relatórios
+        </router-link>
+    </div>
 
     <main class="content">
       <section class="card form-card">
@@ -149,7 +154,7 @@ const handleDelete = async (id) => {
 /* Content Area */
 .content {
   max-width: 1000px;
-  margin: 2rem auto;
+  margin: 0 auto; /* Removido margin top excessivo pois agora tem a barra de ações */
   padding: 0 1rem;
 }
 
@@ -253,5 +258,46 @@ const handleDelete = async (id) => {
 
 .btn-delete:hover {
   background-color: #ffdada;
+}
+
+/* --- ESTILO CORRIGIDO DOS BOTÕES (ROXO E UNIFORME) --- */
+
+.actions-bar {
+  display: flex;
+  justify-content: flex-end; /* Alinha à direita */
+  gap: 20px; /* Espaço generoso entre os botões */
+  padding: 20px 2rem; /* Espaço nas laterais igual ao navbar */
+  margin-bottom: 10px;
+}
+
+.dashboard-btn {
+  /* Cor e Texto */
+  background-color: #9b59b6; /* Roxo (Amethyst) */
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 1rem;
+  
+  /* Tamanho Fixo e Igual para todos */
+  width: 200px;  /* Largura fixa */
+  height: 50px;  /* Altura fixa */
+  
+  /* Centralização perfeita do texto/ícone */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px; /* Espaço entre o emoji e o texto */
+  
+  /* Acabamento */
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1); /* Sombra suave */
+  transition: all 0.3s ease;
+  border: none;
+}
+
+.dashboard-btn:hover {
+  background-color: #8e44ad; /* Roxo mais escuro no hover */
+  transform: translateY(-3px); /* Efeito de "levantar" ao passar o mouse */
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
 }
 </style>
