@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  # 1. DB
+  db:
+    image: postgres:15-alpine
+    container_name: saas_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password_super_secreta
+      POSTGRES_DB: saas_agendamento
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  # 2. API (Backend)
+  backend:
+    build: ./backend
+    container_name: saas_backend
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - DB_USER=postgres
+      - DB_PASSWORD=password_super_secreta
+      - DB_HOST=db  
+      - DB_NAME=saas_agendamento
+      - DB_PORT=5432
+      - JWT_SECRET=minha_chave_docker
+      - PORT=3000
+    depends_on:
+      - db
+
+  # 3. Interface (Frontend)
+  frontend:
+    build: ./frontend
+    container_name: saas_frontend
+    restart: always
+    ports:
+      - "8080:80" 
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
