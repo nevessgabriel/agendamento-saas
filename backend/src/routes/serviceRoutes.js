@@ -1,13 +1,13 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const serviceController = require('../controllers/serviceController');
-const authMiddleware = require('../middlewares/authMiddleware');
+const serviceController = require("../controllers/serviceController");
+const authMiddleware = require("../middlewares/authMiddleware");
 
 router.use(authMiddleware);
 
-router.get('/', serviceController.listServices);
-router.post('/', serviceController.createService);
-router.delete('/:id', serviceController.deleteService);
+router.get("/", serviceController.listServices);
+router.post("/", serviceController.createService);
+router.delete("/:id", serviceController.deleteService);
 
 module.exports = router;
 

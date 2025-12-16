@@ -1,14 +1,14 @@
-const pool = require('../config/db');
+const pool = require("../config/db");
 
 exports.getDashboardStats = async (req, res) => {
-    const companyId = req.companyId;
+  const companyId = req.companyId;
 
-    try {
-        const client = await pool.connect();
+  try {
+    const client = await pool.connect();
 
-        // 1. Overview Metrics (Total Appointments & Revenue)
-        // We JOIN schedules with services to sum the prices
-        const overviewQuery = `
+    // 1. Overview Metrics (Total Appointments & Revenue)
+    // We JOIN schedules with services to sum the prices
+    const overviewQuery = `
             SELECT 
                 COUNT(s.id) as total_appointments,
                 COALESCE(SUM(svc.price), 0) as total_revenue
@@ -16,27 +16,26 @@ exports.getDashboardStats = async (req, res) => {
             JOIN services svc ON s.service_id = svc.id
             WHERE s.company_id = $1
         `;
-        const overviewRes = await client.query(overviewQuery, [companyId]);
+    const overviewRes = await client.query(overviewQuery, [companyId]);
 
-        // 2. Chart Data: Appointments by Service (Group By)
-        const servicesQuery = `
+    // 2. Chart Data: Appointments by Service (Group By)
+    const servicesQuery = `
             SELECT svc.name, COUNT(s.id) as count
             FROM schedules s
             JOIN services svc ON s.service_id = svc.id
             WHERE s.company_id = $1
             GROUP BY svc.name
         `;
-        const servicesRes = await client.query(servicesQuery, [companyId]);
+    const servicesRes = await client.query(servicesQuery, [companyId]);
 
-        client.release();
+    client.release();
 
-        res.json({
-            overview: overviewRes.rows[0],
-            servicesDistribution: servicesRes.rows
-        });
-
-    } catch (error) {
-        console.error('Stats error:', error);
-        res.status(500).json({ error: 'Failed to fetch statistics' });
-    }
+    res.json({
+      overview: overviewRes.rows[0],
+      servicesDistribution: servicesRes.rows,
+    });
+  } catch (error) {
+    console.error("Stats error:", error);
+    res.status(500).json({ error: "Failed to fetch statistics" });
+  }
 };

@@ -1,9 +1,9 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue';
-import api from '../services/api';
+import { ref, onMounted, computed } from "vue";
+import api from "../services/api";
 // Chart.js imports
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
-import { Doughnut } from 'vue-chartjs';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import { Doughnut } from "vue-chartjs";
 
 // Register Chart.js components
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -14,10 +14,10 @@ const loading = ref(true);
 // Fetch data from our new backend endpoint
 const fetchStats = async () => {
   try {
-    const response = await api.get('/stats');
+    const response = await api.get("/stats");
     stats.value = response.data;
   } catch (error) {
-    console.error('Error loading stats');
+    console.error("Error loading stats");
   } finally {
     loading.value = false;
   }
@@ -32,26 +32,26 @@ const chartData = computed(() => {
   if (!stats.value || !stats.value.servicesDistribution) return null;
 
   return {
-    labels: stats.value.servicesDistribution.map(item => item.name),
+    labels: stats.value.servicesDistribution.map((item) => item.name),
     datasets: [
       {
-        backgroundColor: ['#41B883', '#E46651', '#00D8FF', '#DD1B16'],
-        data: stats.value.servicesDistribution.map(item => item.count)
-      }
-    ]
+        backgroundColor: ["#41B883", "#E46651", "#00D8FF", "#DD1B16"],
+        data: stats.value.servicesDistribution.map((item) => item.count),
+      },
+    ],
   };
 });
 
 const chartOptions = {
   responsive: true,
-  maintainAspectRatio: false
+  maintainAspectRatio: false,
 };
 </script>
 
 <template>
   <div class="stats-container">
     <div v-if="loading">Loading charts...</div>
-    
+
     <div v-else-if="stats" class="stats-grid">
       <div class="stat-card money">
         <h3>Receita estimada</h3>
@@ -66,8 +66,12 @@ const chartOptions = {
       <div class="stat-card chart-card">
         <h3>Serviço mais popular</h3>
         <div class="chart-wrapper">
-             <Doughnut v-if="chartData" :data="chartData" :options="chartOptions" />
-             <p v-else>Sem data ainda.</p>
+          <Doughnut
+            v-if="chartData"
+            :data="chartData"
+            :options="chartOptions"
+          />
+          <p v-else>Sem data ainda.</p>
         </div>
       </div>
     </div>
@@ -91,7 +95,7 @@ const chartOptions = {
   background: white;
   padding: 1.5rem;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   text-align: center;
 }
 
@@ -107,15 +111,15 @@ const chartOptions = {
 }
 
 .chart-wrapper {
-    height: 250px;
-    position: relative;
+  height: 250px;
+  position: relative;
 }
 
 h3 {
-    margin: 0;
-    color: #7f8c8d;
-    font-size: 0.9rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+  margin: 0;
+  color: #7f8c8d;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 </style>
