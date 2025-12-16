@@ -1,8 +1,8 @@
 <script setup>
-import { onMounted, ref } from 'vue';
-import { useAuthStore } from '../stores/auth';
-import { useServiceStore } from '../stores/serviceStore';
-import { useRouter } from 'vue-router';
+import { onMounted, ref } from "vue";
+import { useAuthStore } from "../stores/auth";
+import { useServiceStore } from "../stores/serviceStore";
+import { useRouter } from "vue-router";
 
 // Stores and Router initialization
 const authStore = useAuthStore();
@@ -11,9 +11,9 @@ const router = useRouter();
 
 // Local state for the "Add Service" form
 const newService = ref({
-  name: '',
-  price: '',
-  duration: 30 // default duration in minutes
+  name: "",
+  price: "",
+  duration: 30, // default duration in minutes
 });
 
 // Load services when component mounts
@@ -24,7 +24,7 @@ onMounted(() => {
 // Handlers
 const handleLogout = () => {
   authStore.logout();
-  router.push('/login');
+  router.push("/login");
 };
 
 const handleCreateService = async () => {
@@ -34,19 +34,19 @@ const handleCreateService = async () => {
     await serviceStore.addService({
       name: newService.value.name,
       price: parseFloat(newService.value.price),
-      duration: parseInt(newService.value.duration)
+      duration: parseInt(newService.value.duration),
     });
-    
+
     // Reset form
-    newService.value = { name: '', price: '', duration: 30 };
-    alert('Service created successfully!');
+    newService.value = { name: "", price: "", duration: 30 };
+    alert("Service created successfully!");
   } catch (error) {
-    alert('Failed to create service');
+    alert("Failed to create service");
   }
 };
 
 const handleDelete = async (id) => {
-  if (confirm('Are you sure you want to delete this service?')) {
+  if (confirm("Are you sure you want to delete this service?")) {
     await serviceStore.deleteService(id);
   }
 };
@@ -63,13 +63,13 @@ const handleDelete = async (id) => {
     </header>
 
     <div class="actions-bar">
-        <router-link to="/calendar" class="dashboard-btn">
-           📅 Ver Agenda
-        </router-link>
-        
-        <router-link to="/reports" class="dashboard-btn">
-           📊 Ver Relatórios
-        </router-link>
+      <router-link to="/calendar" class="dashboard-btn">
+        📅 Ver Agenda
+      </router-link>
+
+      <router-link to="/reports" class="dashboard-btn">
+        📊 Ver Relatórios
+      </router-link>
     </div>
 
     <main class="content">
@@ -78,12 +78,21 @@ const handleDelete = async (id) => {
         <form @submit.prevent="handleCreateService" class="service-form">
           <div class="form-group">
             <label>Nome do Serviço</label>
-            <input v-model="newService.name" placeholder="ex. Corte de cabelo" required />
+            <input
+              v-model="newService.name"
+              placeholder="ex. Corte de cabelo"
+              required
+            />
           </div>
-          
+
           <div class="form-group">
             <label>Preço (R$)</label>
-            <input v-model="newService.price" type="number" step="0.01" placeholder="0.00" />
+            <input
+              v-model="newService.price"
+              type="number"
+              step="0.01"
+              placeholder="0.00"
+            />
           </div>
 
           <div class="form-group">
@@ -102,20 +111,26 @@ const handleDelete = async (id) => {
 
       <section class="services-list">
         <h2>Seus serviços</h2>
-        
+
         <div v-if="serviceStore.loading">Carregando...</div>
-        
+
         <div v-else-if="serviceStore.services.length === 0" class="empty-state">
           Sem serviços registrados ainda. Adicione algum acima!
         </div>
 
         <div v-else class="grid">
-          <div v-for="service in serviceStore.services" :key="service.id" class="service-card">
+          <div
+            v-for="service in serviceStore.services"
+            :key="service.id"
+            class="service-card"
+          >
             <div class="service-info">
               <h3>{{ service.name }}</h3>
               <p>{{ service.duration }} mins • R$ {{ service.price }}</p>
             </div>
-            <button @click="handleDelete(service.id)" class="btn-delete">Delete</button>
+            <button @click="handleDelete(service.id)" class="btn-delete">
+              Delete
+            </button>
           </div>
         </div>
       </section>
@@ -137,7 +152,7 @@ const handleDelete = async (id) => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .brand {
@@ -154,7 +169,7 @@ const handleDelete = async (id) => {
 /* Content Area */
 .content {
   max-width: 1000px;
-  margin: 0 auto; /* Removido margin top excessivo pois agora tem a barra de ações */
+  margin: 0 auto;
   padding: 0 1rem;
 }
 
@@ -163,7 +178,7 @@ const handleDelete = async (id) => {
   background: white;
   padding: 1.5rem;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   margin-bottom: 2rem;
 }
 
@@ -185,7 +200,8 @@ const handleDelete = async (id) => {
   margin-bottom: 0.4rem;
 }
 
-.form-group input, .form-group select {
+.form-group input,
+.form-group select {
   padding: 0.6rem;
   border: 1px solid #ddd;
   border-radius: 4px;
@@ -211,7 +227,7 @@ const handleDelete = async (id) => {
 
 .service-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 .service-info h3 {
@@ -260,44 +276,37 @@ const handleDelete = async (id) => {
   background-color: #ffdada;
 }
 
-/* --- ESTILO CORRIGIDO DOS BOTÕES (ROXO E UNIFORME) --- */
-
 .actions-bar {
   display: flex;
-  justify-content: flex-end; /* Alinha à direita */
-  gap: 20px; /* Espaço generoso entre os botões */
-  padding: 20px 2rem; /* Espaço nas laterais igual ao navbar */
+  justify-content: flex-end;
+  padding: 20px 2rem;
   margin-bottom: 10px;
 }
 
 .dashboard-btn {
-  /* Cor e Texto */
-  background-color: #9b59b6; /* Roxo (Amethyst) */
+  background-color: #9b59b6;
   color: white;
   text-decoration: none;
   font-weight: bold;
   font-size: 1rem;
-  
-  /* Tamanho Fixo e Igual para todos */
-  width: 200px;  /* Largura fixa */
-  height: 50px;  /* Altura fixa */
-  
-  /* Centralização perfeita do texto/ícone */
+
+  width: 200px;
+  height: 50px;
+
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px; /* Espaço entre o emoji e o texto */
-  
-  /* Acabamento */
+  gap: 10px;
+
   border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1); /* Sombra suave */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
   border: none;
 }
 
 .dashboard-btn:hover {
-  background-color: #8e44ad; /* Roxo mais escuro no hover */
-  transform: translateY(-3px); /* Efeito de "levantar" ao passar o mouse */
-  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+  background-color: #8e44ad;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 </style>

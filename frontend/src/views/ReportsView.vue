@@ -1,6 +1,6 @@
 <script setup>
-import StatsCard from '../components/StatsCard.vue';
-import { useRouter } from 'vue-router';
+import StatsCard from "../components/StatsCard.vue";
+import { useRouter } from "vue-router";
 
 const router = useRouter();
 </script>
@@ -32,7 +32,7 @@ const router = useRouter();
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   margin-bottom: 2rem;
 }
 

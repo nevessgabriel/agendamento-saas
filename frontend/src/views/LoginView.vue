@@ -1,26 +1,26 @@
 <script setup>
-import { ref } from 'vue';
-import { useAuthStore } from '../stores/auth';
-import { useRouter } from 'vue-router';
+import { ref } from "vue";
+import { useAuthStore } from "../stores/auth";
+import { useRouter } from "vue-router";
 
 const authStore = useAuthStore();
 const router = useRouter();
 
-const email = ref('');
-const password = ref('');
-const errorMsg = ref('');
+const email = ref("");
+const password = ref("");
+const errorMsg = ref("");
 const isLoading = ref(false);
 
 const handleLogin = async () => {
-  errorMsg.value = '';
+  errorMsg.value = "";
   isLoading.value = true;
-  
+
   try {
     await authStore.login(email.value, password.value);
     // Redirect to dashboard on successful login
-    router.push('/dashboard');
+    router.push("/dashboard");
   } catch (err) {
-    errorMsg.value = 'Email ou senha incorretos.';
+    errorMsg.value = "Email ou senha incorretos.";
   } finally {
     isLoading.value = false;
   }
@@ -36,22 +36,22 @@ const handleLogin = async () => {
       <form @submit.prevent="handleLogin">
         <div class="form-group">
           <label for="email">Email</label>
-          <input 
-            type="email" 
-            id="email" 
-            v-model="email" 
-            placeholder="ex: admin@empresa.com" 
+          <input
+            type="email"
+            id="email"
+            v-model="email"
+            placeholder="ex: admin@empresa.com"
             required
           />
         </div>
 
         <div class="form-group">
           <label for="password">Senha</label>
-          <input 
-            type="password" 
-            id="password" 
-            v-model="password" 
-            placeholder="Sua senha secreta" 
+          <input
+            type="password"
+            id="password"
+            v-model="password"
+            placeholder="Sua senha secreta"
             required
           />
         </div>
@@ -59,7 +59,7 @@ const handleLogin = async () => {
         <p v-if="errorMsg" class="error">{{ errorMsg }}</p>
 
         <button type="submit" :disabled="isLoading">
-          {{ isLoading ? 'Entrando...' : 'Entrar' }}
+          {{ isLoading ? "Entrando..." : "Entrar" }}
         </button>
       </form>
     </div>
@@ -74,7 +74,7 @@ const handleLogin = async () => {
   justify-content: center;
   align-items: center;
   background-color: #f0f2f5;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
 /* Card de Login */

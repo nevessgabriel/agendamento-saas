@@ -8,6 +8,7 @@ const authRoutes = require('./src/routes/authRoutes');
 const serviceRoutes = require('./src/routes/serviceRoutes');
 const scheduleRoutes = require('./src/routes/scheduleRoutes');
 const statsRoutes = require('./src/routes/statsRoutes');
+const publicRoutes = require('./src/routes/publicRoutes');
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/services', serviceRoutes);
 app.use('/api/schedules', scheduleRoutes);
 app.use('/api/stats', statsRoutes);
+app.use('/api/public', publicRoutes);
 
 //Simple route to test server
 app.get('/', (req, res) => {
