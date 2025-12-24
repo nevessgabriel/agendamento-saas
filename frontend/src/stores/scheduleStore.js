@@ -10,11 +10,10 @@ export const useScheduleStore = defineStore("schedule", () => {
 
   // Actions
 
-  // Fetch schedules for a specific date (Format: YYYY-MM-DD)
   async function fetchSchedules(date) {
     loading.value = true;
     try {
-      // Backend expects ?date=2023-10-25
+      // Send the date as a query parameter (e.g., /schedules?date=2025-12-24)
       const response = await api.get(`/schedules?date=${date}`);
       schedules.value = response.data;
     } catch (err) {
@@ -28,14 +27,14 @@ export const useScheduleStore = defineStore("schedule", () => {
   async function createSchedule(appointmentData) {
     try {
       await api.post("/schedules", appointmentData);
-      // After creating, refresh the list to show the new block
-      // We extract the date from the startTime string
+
       const dateStr = appointmentData.startTime.split("T")[0];
+
       await fetchSchedules(dateStr);
       return true;
     } catch (err) {
       console.error("Error booking:", err);
-      throw err; // Let the component handle the error message
+      throw err; // Propagate error to the component (to show alerts/toasts)
     }
   }
 
@@ -43,7 +42,8 @@ export const useScheduleStore = defineStore("schedule", () => {
   async function deleteSchedule(id, dateContext) {
     try {
       await api.delete(`/schedules/${id}`);
-      await fetchSchedules(dateContext); // Refresh list
+      // Refresh the list for the day the user is currently viewing
+      await fetchSchedules(dateContext);
     } catch (err) {
       console.error("Error deleting:", err);
     }

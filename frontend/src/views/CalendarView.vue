@@ -1,7 +1,8 @@
 <script setup>
-import { ref, onMounted, computed, watch } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { useScheduleStore } from "../stores/scheduleStore";
 import { useServiceStore } from "../stores/serviceStore";
+import Sidebar from "../components/Sidebar.vue"; // Imported Sidebar
 
 const scheduleStore = useScheduleStore();
 const serviceStore = useServiceStore();
@@ -21,9 +22,11 @@ const form = ref({
 // Load data on mount and when date changes
 onMounted(async () => {
   await serviceStore.fetchServices();
+  // Fetch only for the specific date selected
   await scheduleStore.fetchSchedules(selectedDate.value);
 });
 
+// Watcher: Re-fetch data when the user picks a new date
 watch(selectedDate, async (newDate) => {
   await scheduleStore.fetchSchedules(newDate);
 });
@@ -48,7 +51,6 @@ const timeSlots = [
 const getAppointmentForSlot = (time) => {
   return scheduleStore.schedules.find((s) => {
     // Backend sends ISO string (2023-10-25T09:00:00.000Z)
-    // We compare the HH:MM part
     const scheduleTime = new Date(s.start_time).toTimeString().substring(0, 5);
     return scheduleTime.startsWith(time.substring(0, 2));
   });
@@ -84,49 +86,59 @@ const handleBooking = async () => {
 
 const handleCancel = async (id) => {
   if (confirm("Cancelar este agendamento?")) {
+    // Pass 'selectedDate' context so the store refreshes the correct day list
     await scheduleStore.deleteSchedule(id, selectedDate.value);
   }
 };
 </script>
 
 <template>
-  <div class="calendar-layout">
-    <div class="header-controls">
-      <h2>Agenda Diária</h2>
-      <input type="date" v-model="selectedDate" class="date-picker" />
-      <router-link to="/dashboard" class="btn-back"
-        >Voltar ao Dashboard</router-link
-      >
-    </div>
+  <div class="layout">
+    <Sidebar />
 
-    <div class="day-view">
-      <div v-for="time in timeSlots" :key="time" class="time-row">
-        <div class="time-label">{{ time }}</div>
-
-        <div class="slot-content">
-          <div v-if="getAppointmentForSlot(time)" class="appointment-card">
-            <span>
-              <strong>{{
-                getAppointmentForSlot(time).start_time.substring(11, 16)
-              }}</strong>
-              -
-              {{ getAppointmentForSlot(time).client_name }}
-              ({{ getAppointmentForSlot(time).service_name }})
-            </span>
-            <button
-              @click="handleCancel(getAppointmentForSlot(time).id)"
-              class="btn-xs"
-            >
-              X
-            </button>
+    <main class="main-content">
+      <div class="calendar-card">
+        <div class="header-controls">
+          <h2>Agenda Diária</h2>
+          <div class="controls-right">
+            <input type="date" v-model="selectedDate" class="date-picker" />
           </div>
+        </div>
 
-          <button v-else @click="openBookingModal(time)" class="btn-add-slot">
-            + Adicionar
-          </button>
+        <div class="day-view">
+          <div v-for="time in timeSlots" :key="time" class="time-row">
+            <div class="time-label">{{ time }}</div>
+
+            <div class="slot-content">
+              <div v-if="getAppointmentForSlot(time)" class="appointment-card">
+                <span>
+                  <strong>{{
+                    getAppointmentForSlot(time).start_time.substring(11, 16)
+                  }}</strong>
+                  -
+                  {{ getAppointmentForSlot(time).client_name }}
+                  ({{ getAppointmentForSlot(time).service_name }})
+                </span>
+                <button
+                  @click="handleCancel(getAppointmentForSlot(time).id)"
+                  class="btn-xs"
+                >
+                  X
+                </button>
+              </div>
+
+              <button
+                v-else
+                @click="openBookingModal(time)"
+                class="btn-add-slot"
+              >
+                + Adicionar
+              </button>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+    </main>
 
     <div v-if="showModal" class="modal-overlay">
       <div class="modal">
@@ -169,13 +181,33 @@ const handleCancel = async (id) => {
 </template>
 
 <style scoped>
-.calendar-layout {
-  max-width: 800px;
-  margin: 2rem auto;
-  padding: 1rem;
+/* Layout Structure */
+.layout {
+  min-height: 100vh;
+  background-color: #f4f6f8;
+  display: flex;
+}
+
+/* Main Content Area */
+.main-content {
+  flex: 1;
+  margin-left: 70px; /* Space for Sidebar */
+  padding: 2rem;
+
+  /* Centering Logic */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* The Card itself */
+.calendar-card {
+  width: 100%;
+  max-width: 900px; /* Limits width on large screens */
   background: white;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
 }
 
 .header-controls {
@@ -185,17 +217,24 @@ const handleCancel = async (id) => {
   margin-bottom: 2rem;
 }
 
+.header-controls h2 {
+  color: #2c3e50;
+  margin: 0;
+}
+
 .date-picker {
   padding: 0.5rem;
   font-size: 1rem;
   border: 1px solid #ddd;
   border-radius: 4px;
+  color: #2c3e50;
+  font-weight: bold;
 }
 
 .time-row {
   display: flex;
   border-bottom: 1px solid #eee;
-  height: 60px; /* Altura fixa para cada hora */
+  height: 60px; /* Fixed height per hour slot */
 }
 
 .time-label {
@@ -204,6 +243,9 @@ const handleCancel = async (id) => {
   color: #666;
   border-right: 1px solid #eee;
   font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .slot-content {
@@ -217,11 +259,12 @@ const handleCancel = async (id) => {
   border-left: 4px solid #2196f3;
   height: 100%;
   border-radius: 4px;
-  padding: 0 10px;
+  padding: 0 15px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
+  color: #2c3e50;
 }
 
 .btn-xs {
@@ -230,6 +273,7 @@ const handleCancel = async (id) => {
   color: #e74c3c;
   cursor: pointer;
   font-weight: bold;
+  font-size: 1.1rem;
 }
 
 .btn-add-slot {
@@ -240,16 +284,12 @@ const handleCancel = async (id) => {
   color: transparent;
   cursor: pointer;
   transition: all 0.2s;
+  font-weight: bold;
 }
 
 .btn-add-slot:hover {
   background-color: #f9f9f9;
   color: #ccc;
-}
-
-.btn-back {
-  text-decoration: none;
-  color: #666;
 }
 
 /* Modal Styling */
@@ -263,13 +303,20 @@ const handleCancel = async (id) => {
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 2000;
 }
 
 .modal {
   background: white;
   padding: 2rem;
   border-radius: 8px;
-  width: 300px;
+  width: 350px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.modal h3 {
+  margin-top: 0;
+  color: #2c3e50;
 }
 
 .form-group {
@@ -278,8 +325,10 @@ const handleCancel = async (id) => {
 .form-group input,
 .form-group select {
   width: 100%;
-  padding: 0.5rem;
-  margin-top: 0.2rem;
+  padding: 0.6rem;
+  margin-top: 0.3rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
 }
 
 .modal-actions {
@@ -292,16 +341,18 @@ const handleCancel = async (id) => {
   background: #42b983;
   color: white;
   border: none;
-  padding: 0.5rem 1rem;
+  padding: 0.6rem 1.2rem;
   border-radius: 4px;
   cursor: pointer;
+  font-weight: bold;
 }
 
 .btn-cancel {
   background: #ccc;
   border: none;
-  padding: 0.5rem 1rem;
+  padding: 0.6rem 1.2rem;
   border-radius: 4px;
   cursor: pointer;
+  color: #333;
 }
 </style>

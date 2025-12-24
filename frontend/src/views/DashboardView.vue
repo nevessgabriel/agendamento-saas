@@ -2,30 +2,22 @@
 import { onMounted, ref } from "vue";
 import { useAuthStore } from "../stores/auth";
 import { useServiceStore } from "../stores/serviceStore";
-import { useRouter } from "vue-router";
+import Sidebar from "../components/Sidebar.vue";
 
-// Stores and Router initialization
+// Stores initialization
 const authStore = useAuthStore();
 const serviceStore = useServiceStore();
-const router = useRouter();
 
-// Local state for the "Add Service" form
+// Local state for "Add Service" form
 const newService = ref({
   name: "",
   price: "",
-  duration: 30, // default duration in minutes
+  duration: 30,
 });
 
-// Load services when component mounts
 onMounted(() => {
   serviceStore.fetchServices();
 });
-
-// Handlers
-const handleLogout = () => {
-  authStore.logout();
-  router.push("/login");
-};
 
 const handleCreateService = async () => {
   if (!newService.value.name) return;
@@ -37,16 +29,15 @@ const handleCreateService = async () => {
       duration: parseInt(newService.value.duration),
     });
 
-    // Reset form
     newService.value = { name: "", price: "", duration: 30 };
-    alert("Service created successfully!");
+    alert("Serviço criado com sucesso!");
   } catch (error) {
-    alert("Failed to create service");
+    alert("Erro ao criar serviço");
   }
 };
 
 const handleDelete = async (id) => {
-  if (confirm("Are you sure you want to delete this service?")) {
+  if (confirm("Tem certeza que deseja excluir?")) {
     await serviceStore.deleteService(id);
   }
 };
@@ -54,27 +45,18 @@ const handleDelete = async (id) => {
 
 <template>
   <div class="dashboard-layout">
-    <header class="navbar">
-      <div class="brand">SaaS Scheduler</div>
-      <div class="user-info">
-        <span>Bem-vindo, {{ authStore.user?.email }}</span>
-        <button @click="handleLogout" class="btn-logout">Logout</button>
-      </div>
-    </header>
+    <Sidebar />
 
-    <div class="actions-bar">
-      <router-link to="/calendar" class="dashboard-btn">
-        📅 Ver Agenda
-      </router-link>
+    <main class="main-content">
+      <header class="top-header">
+        <h1>Painel de Controle</h1>
+        <div class="user-badge">
+          <span>Olá, {{ authStore.user?.email }}</span>
+        </div>
+      </header>
 
-      <router-link to="/reports" class="dashboard-btn">
-        📊 Ver Relatórios
-      </router-link>
-    </div>
-
-    <main class="content">
       <section class="card form-card">
-        <h2>Registre aqui um novo serviço</h2>
+        <h2>Registre um novo serviço</h2>
         <form @submit.prevent="handleCreateService" class="service-form">
           <div class="form-group">
             <label>Nome do Serviço</label>
@@ -96,7 +78,7 @@ const handleDelete = async (id) => {
           </div>
 
           <div class="form-group">
-            <label>Duração (minutos)</label>
+            <label>Duração</label>
             <select v-model="newService.duration">
               <option value="15">15 min</option>
               <option value="30">30 min</option>
@@ -105,7 +87,7 @@ const handleDelete = async (id) => {
             </select>
           </div>
 
-          <button type="submit" class="btn-primary">Adicionar Serviço</button>
+          <button type="submit" class="btn-primary">Adicionar</button>
         </form>
       </section>
 
@@ -115,7 +97,7 @@ const handleDelete = async (id) => {
         <div v-if="serviceStore.loading">Carregando...</div>
 
         <div v-else-if="serviceStore.services.length === 0" class="empty-state">
-          Sem serviços registrados ainda. Adicione algum acima!
+          Sem serviços registrados ainda.
         </div>
 
         <div v-else class="grid">
@@ -129,7 +111,7 @@ const handleDelete = async (id) => {
               <p>{{ service.duration }} mins • R$ {{ service.price }}</p>
             </div>
             <button @click="handleDelete(service.id)" class="btn-delete">
-              Delete
+              Excluir
             </button>
           </div>
         </div>
@@ -139,45 +121,45 @@ const handleDelete = async (id) => {
 </template>
 
 <style scoped>
-/* Layout Structure */
 .dashboard-layout {
   min-height: 100vh;
   background-color: #f4f6f8;
+  display: flex;
 }
 
-/* Navbar */
-.navbar {
-  background-color: white;
-  padding: 1rem 2rem;
+.main-content {
+  flex: 1;
+  margin-left: 70px; /* IMPORTANTE: Espaço reservado para a Sidebar fechada */
+  padding: 2rem;
+  transition: margin-left 0.3s ease;
+}
+
+.top-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  margin-bottom: 2rem;
 }
 
-.brand {
-  font-weight: bold;
-  font-size: 1.2rem;
+.top-header h1 {
+  font-size: 1.8rem;
   color: #2c3e50;
+  margin: 0;
 }
 
-.user-info span {
-  margin-right: 1rem;
+.user-badge {
+  background: white;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
   color: #666;
+  font-weight: 500;
 }
 
-/* Content Area */
-.content {
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 0 1rem;
-}
-
-/* Cards & Forms */
 .card {
   background: white;
   padding: 1.5rem;
-  border-radius: 8px;
+  border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   margin-bottom: 2rem;
 }
@@ -193,41 +175,54 @@ const handleDelete = async (id) => {
   display: flex;
   flex-direction: column;
 }
-
 .form-group label {
   font-size: 0.85rem;
   color: #666;
   margin-bottom: 0.4rem;
 }
-
 .form-group input,
 .form-group select {
-  padding: 0.6rem;
+  padding: 0.8rem;
   border: 1px solid #ddd;
-  border-radius: 4px;
+  border-radius: 6px;
 }
 
-/* Grid for Services */
+.btn-primary {
+  background-color: #9b59b6;
+  color: white;
+  padding: 0.8rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  height: 42px;
+}
+
+.btn-primary:hover {
+  background-color: #8e44ad;
+}
+
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
 }
 
 .service-card {
   background: white;
-  padding: 1rem;
-  border-radius: 8px;
+  padding: 1.2rem;
+  border-radius: 12px;
   border: 1px solid #eee;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
   transition: transform 0.2s;
 }
 
 .service-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
 .service-info h3 {
@@ -235,78 +230,30 @@ const handleDelete = async (id) => {
   font-size: 1.1rem;
   color: #2c3e50;
 }
-
 .service-info p {
   margin: 0.4rem 0 0 0;
   color: #7f8c8d;
   font-size: 0.9rem;
 }
 
-/* Buttons */
-.btn-primary {
-  background-color: #42b983;
-  color: white;
-  padding: 0.7rem 1.2rem;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-.btn-logout {
-  background: none;
-  border: 1px solid #e74c3c;
-  color: #e74c3c;
-  padding: 0.4rem 0.8rem;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
 .btn-delete {
-  background-color: #ffeaea;
+  background-color: #fff5f5;
   color: #e74c3c;
   border: none;
-  padding: 0.5rem;
-  border-radius: 4px;
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
   cursor: pointer;
-  font-size: 0.8rem;
+  font-weight: 600;
+  transition: background 0.2s;
 }
 
 .btn-delete:hover {
-  background-color: #ffdada;
+  background-color: #fee2e2;
 }
 
-.actions-bar {
-  display: flex;
-  justify-content: flex-end;
-  padding: 20px 2rem;
-  margin-bottom: 10px;
-}
-
-.dashboard-btn {
-  background-color: #9b59b6;
-  color: white;
-  text-decoration: none;
-  font-weight: bold;
-  font-size: 1rem;
-
-  width: 200px;
-  height: 50px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-  border: none;
-}
-
-.dashboard-btn:hover {
-  background-color: #8e44ad;
-  transform: translateY(-3px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+.empty-state {
+  text-align: center;
+  color: #999;
+  margin-top: 2rem;
 }
 </style>

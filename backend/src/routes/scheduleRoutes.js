@@ -8,5 +8,6 @@ router.use(authMiddleware);
 router.get("/", scheduleController.listSchedules);
 router.post("/", scheduleController.createSchedule);
 router.delete("/:id", scheduleController.deleteSchedule);
+router.get('/history', scheduleController.getHistory);
 
 module.exports = router;
