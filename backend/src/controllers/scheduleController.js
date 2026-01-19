@@ -2,7 +2,7 @@
 const pool = require("../config/db");
 
 exports.listSchedules = async (req, res) => {
-  const { date } = req.query; // Recebe a data enviada pelo Frontend (ex: '2025-12-24')
+  const { date } = req.query;
 
   try {
     let query = `
