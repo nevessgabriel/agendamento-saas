@@ -1,14 +1,15 @@
 // backend/server.js
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
+require("dotenv").config();
+const express = require("express");
+const cors = require("cors");
 
 //Import Routes
-const authRoutes = require('./src/routes/authRoutes');
-const serviceRoutes = require('./src/routes/serviceRoutes');
-const scheduleRoutes = require('./src/routes/scheduleRoutes');
-const statsRoutes = require('./src/routes/statsRoutes');
-const publicRoutes = require('./src/routes/publicRoutes');
+const authRoutes = require("./src/routes/authRoutes");
+const serviceRoutes = require("./src/routes/serviceRoutes");
+const scheduleRoutes = require("./src/routes/scheduleRoutes");
+const reportRoutes = require("./src/routes/reportRoutes");
+const publicRoutes = require("./src/routes/publicRoutes");
+const companyRoutes = require("./src/routes/companyRoutes");
 
 const app = express();
 
@@ -17,18 +18,19 @@ app.use(cors());
 app.use(express.json());
 
 //Routes definition
-app.use('/api/auth', authRoutes);
-app.use('/api/services', serviceRoutes);
-app.use('/api/schedules', scheduleRoutes);
-app.use('/api/stats', statsRoutes);
-app.use('/api/public', publicRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/services", serviceRoutes);
+app.use("/api/schedules", scheduleRoutes);
+app.use("/api/reports", reportRoutes);
+app.use("/api/public", publicRoutes);
+app.use("/api/company", companyRoutes);
 
 //Simple route to test server
-app.get('/', (req, res) => {
-    res.send('API SaaS Agendamento rodando!');
+app.get("/", (req, res) => {
+  res.send("API SaaS Agendamento rodando!");
 });
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`Servidor rodando na porta ${PORT}`);
+  console.log(`Servidor rodando na porta ${PORT}`);
 });

@@ -10,6 +10,7 @@ import ReportsView from "../views/ReportsView.vue";
 import ClientBookingView from "../views/ClientBookingView.vue";
 import HomeView from "../views/HomeView.vue";
 import HistoryView from "../views/HistoryView.vue";
+import SettingsView from "../views/SettingsView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -52,6 +53,12 @@ const router = createRouter({
       path: "/history",
       name: "history",
       component: HistoryView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: "/settings",
+      name: "settings",
+      component: SettingsView,
       meta: { requiresAuth: true },
     },
     {

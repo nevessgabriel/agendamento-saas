@@ -20,7 +20,7 @@ onMounted(async () => {
 <template>
   <div class="landing-page">
     <div class="hero">
-      <h1>SaaS Scheduler</h1>
+      <h1>Central de Agendamento</h1>
       <p>A plataforma completa para gerenciar sua barbearia ou clínica.</p>
 
       <div class="buttons">
